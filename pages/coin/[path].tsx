@@ -6,26 +6,29 @@ import Header from "components/header/Header";
 import { API_HOST, COINS_DETAIL } from "utils/constants";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import cacheData from "memory-cache";
 
 export async function getServerSideProps(context: any) {
   const { params, res } = context;
   const { path } = params;
-  const data = await getData(path);
+  let cached = cacheData.get(path);
 
-  res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=10, stale-while-revalidate=59"
-  );
+  if (!cached) {
+    const data = await getData(path);
 
-  if (!data) {
-    return {
-      notFound: true,
-    };
+    if (data) {
+      cacheData.put(path, data, 1000 * 10 * 60);
+      cached = data;
+    } else {
+      return {
+        notFound: true,
+      };
+    }
   }
 
   return {
     props: {
-      coin: data,
+      coin: cached,
     },
   };
 }
@@ -82,7 +85,8 @@ const Coin = ({ coin: initialCoin }: Props) => {
           justifyContent="flex-end"
           sx={{ padding: "6px 0" }}
         >
-          {last_updated && date &&
+          {last_updated &&
+            date &&
             `Update date - ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`}
         </Grid>
         <Grid
