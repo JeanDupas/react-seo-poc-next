@@ -1,0 +1,17 @@
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.table-row {
+  cursor: pointer;
+}
+
+.table-row:hover {
+  background-color: #e9e9e9;
+}
