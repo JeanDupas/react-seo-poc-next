@@ -57,16 +57,6 @@ const Coin = ({ coin: initialCoin }: Props) => {
   const router = useRouter();
   const { path } = router.query;
 
-  useEffect(() => {
-    const id = setInterval(async () => {
-      const data = await getData(path);
-      if (data) {
-        setCoin(coin);
-      }
-    }, 60000);
-    return () => clearInterval(id);
-  }, [path]);
-
   const { last_updated } = coin || {};
   const date = last_updated ? new Date(last_updated) : null;
 
